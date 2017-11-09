@@ -6,9 +6,8 @@
 web/app/composer.json
 
 # PHPStorm
-.idea/**/workspace.xml
-.idea/**/tasks.xml
-.idea/dictionaries
+.idea/
+/.idea/
 
 # Netbeans
 nbproject/
