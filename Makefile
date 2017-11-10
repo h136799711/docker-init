@@ -3,7 +3,7 @@
 include .env
 
 # MySQL
-MYSQL_DUMPS_DIR=data/db/dumps
+MYSQL_DUMPS_DIR=/itboye/data/db/dumps
 
 help:
 	@echo ""
