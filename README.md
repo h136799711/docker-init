@@ -1,72 +1,64 @@
 # Nginx PHP MySQL [![Build Status](https://travis-ci.org/h136799711/docker-init.svg?branch=master)](https://travis-ci.org/h136799711/docker-init) [![GitHub version](https://badge.fury.io/gh/nanoninja%2Fdocker-nginx-php-mysql.svg)](https://badge.fury.io/gh/nanoninja%2Fdocker-nginx-php-mysql)
 
-Docker running Nginx, PHP-FPM, Composer, MySQL and PHPMyAdmin.
+在Docker环境下运行 Nginx,PHP-FPM,Composer,MySQL 和 PHPMyAdmin
 
-## Overview
+## 概述
 
-1. [Install prerequisites](#install-prerequisites)
+1. [安装预先软件](#install-prerequisites)
+    
+    在安装项目之前，确保满足以下先决条件。
 
-    Before installing project make sure the following prerequisites have been met.
+2. [克隆项目](#clone-the-project)
 
-2. [Clone the project](#clone-the-project)
+    我们将从GitHub上下载代码。
 
-    We’ll download the code from its repository on GitHub.
+3. [nginx的SSL证书配置](#configure-nginx-with-ssl-certificates) [可选]
 
-3. [Configure Nginx With SSL Certificates](#configure-nginx-with-ssl-certificates) [Optional]
+    我们将生成和配置nginx的SSL证书在运行服务器之前。
 
-    We'll generate and configure SSL certificate for nginx before running server.
+4. [配置 Xdebug](#configure-xdebug) [可选]
+    我们将为IDE(PHPStorm 或 Netbeans) 配置 Xdebug
+5. [运行应用](#run-the-application)
+    到这一步，已经做好所有准备工作了.
 
-4. [Configure Xdebug](#configure-xdebug) [Optional]
+6. [使用 Makefile](#use-makefile) [可选]
 
-    We'll configure Xdebug for IDE (PHPStorm or Netbeans).
+   在开发的时候，你可以用` makefile `做重复的操作。
 
-5. [Run the application](#run-the-application)
+7. [使用 Docker 命令](#use-docker-commands)
 
-    By this point we’ll have all the project pieces in place.
-
-6. [Use Makefile](#use-makefile) [Optional]
-
-    When developing, you can use `Makefile` for doing recurrent operations.
-
-7. [Use Docker Commands](#use-docker-commands)
-
-    When running, you can use docker commands for doing recurrent operations.
+    运行时，你可以使用Docker命令做重复的操作。
 
 ___
 
-## Install prerequisites
-
-For now, this project has been mainly created for Unix `(Linux/MacOS)`. Perhaps it could work on Windows.
-
-All requisites should be available for your distribution. The most important are :
+## 安装先决软件
+目前，这个项目主要是为unix`(Linux/MacOS)`创建的。也许它可以在Windows上工作。
+最重要需要安装的软件 :
 
 * [Git](https://git-scm.com/downloads)
 * [Docker](https://docs.docker.com/engine/installation/)
 * [Docker Compose](https://docs.docker.com/compose/install/)
 
-Check if `docker-compose` is already installed by entering the following command : 
+检查 `docker-compose` 是否已经安装了，通过输入以下命令: 
 
 ```sh
 which docker-compose
 ```
-
-Check Docker Compose compatibility :
-
+检查Docker Compose 兼容性:
  - [Compose file version 3 reference](https://docs.docker.com/compose/compose-file/)
 
-The following is optional but makes life more enjoyable :
+以下是可选的但是可以使开发更方便
 
 ```sh
 which make
 ```
-
-On Ubuntu and Debian these are available in the meta-package build-essential. On other distributions, you may need to install the GNU C++ compiler separately.
+在 Ubuntu and Debian 这些是内置可用的。在其它发布版本下，你可能需要单独安装GNU C++ 编译器。
 
 ```sh
 sudo apt install build-essential
 ```
 
-### Images to use
+### 使用的镜像
 
 * [Nginx](https://hub.docker.com/_/nginx/)
 * [MySQL](https://hub.docker.com/_/mysql/)
@@ -75,11 +67,11 @@ sudo apt install build-essential
 * [PHPMyAdmin](https://hub.docker.com/r/phpmyadmin/phpmyadmin/)
 * [Generate Certificate](https://hub.docker.com/r/jacoelho/generate-certificate/)
 
-You should be careful when installing third party web servers such as MySQL or Nginx.
+你应该额外小心的安装第三方Web服务器，例如: mysql 或 nginx.
 
-This project use the following ports :
+这些项目使用以下端口 :
 
-| Server     | Port |
+| 服务       | 端口 |
 |------------|------|
 | MySQL      | 8989 |
 | PHPMyAdmin | 8080 |
@@ -88,21 +80,21 @@ This project use the following ports :
 
 ---
 
-## Clone the project
+## 克隆项目
 
-To install [Git](http://git-scm.com/book/en/v2/Getting-Started-Installing-Git), download it and install following the instructions : 
+安装 [Git](http://git-scm.com/book/en/v2/Getting-Started-Installing-Git), 下载它并且按照说明安装 : 
 
 ```sh
 git clone https://github.com/h136799711/docker-init.git
 ```
 
-Go to the project directory : 
+进入项目目录：
 
 ```sh
 cd docker-nginx-php-mysql
 ```
 
-### Project tree
+### 项目结构
 
 ```sh
 .
@@ -137,23 +129,22 @@ cd docker-nginx-php-mysql
 
 ---
 
-## Configure Nginx With SSL Certificates
+## 使用SSL证书配置Nginx
 
-You can change the host name by editing the `.env` file.
+你可以修改 主机名称通过编辑 `.env` 文件
+如果你修改了 主机名 ，不要忘记了把它加入到 `/etc/hosts` 文件.
 
-If you modify the host name, do not forget to add it to the `/etc/hosts` file.
-
-1. Generate SSL certificates
+1. 生成 SSL certificates
 
     ```sh
     source .env && sudo docker run --rm -v $(pwd)/etc/ssl:/certificates -e "SERVER=$NGINX_HOST" jacoelho/generate-certificate
     ```
 
-2. Configure Nginx
+2. 配置 Nginx
 
-    Do not modify the `etc/nginx/default.conf` file, it is overwritten by  `etc/nginx/default.template.conf`
+    不要修改 `etc/nginx/default.conf` 文件, 它会被  `etc/nginx/default.template.conf` 文件的内容覆盖
 
-    Edit nginx file `etc/nginx/default.template.conf` and uncomment the SSL server section :
+    编辑nginx文件 `etc/nginx/default.template.conf` 并且取消注释 SSL 服务小节 :
 
     ```sh
     # server {
@@ -167,36 +158,40 @@ If you modify the host name, do not forget to add it to the `/etc/hosts` file.
 
 ---
 
-## Configure Xdebug
+## 配置 Xdebug
 
-If you use another IDE than [PHPStorm](https://www.jetbrains.com/phpstorm/) or [Netbeans](https://netbeans.org/), go to the [remote debugging](https://xdebug.org/docs/remote) section of Xdebug documentation.
+如果你用的是除了 [PHPStorm](https://www.jetbrains.com/phpstorm/) 或 [Netbeans](https://netbeans.org/), 请查看 Xdebug 文档的 [remote debugging](https://xdebug.org/docs/remote) 小节内容.
 
 For a better integration of Docker to PHPStorm, use the [documentation](https://github.com/h136799711/docker-init/blob/master/doc/phpstorm-macosx.md).
 
-1. Get your own local IP address :
-
+1. 获取本地ip地址 :
+    linux
     ```sh
     sudo ifconfig
     ```
+    windows
+    ```sh
+    ipconfig
+    ```
+    
 
-2. Edit php file `etc/php/php.ini` and comment or uncomment the configuration as needed.
+2. 编辑php文件 `etc/php/php.ini` 并注释或取消注释你所需要的.
 
-3. Set the `remote_host` parameter with your IP :
+3. 设置 `remote_host` 参数值为你的本地IP :
 
     ```sh
-    xdebug.remote_host=192.168.0.1 # your IP
+    xdebug.remote_host=192.168.0.1 # 你本地机子的ip
     ```
 ---
 
-## Run the application
+## 运行应用
 
-1. Copying the composer configuration file : 
-
+1. 拷贝composer 配置文件 ：
     ```sh
     cp web/app/composer.json.dist web/app/composer.json
     ```
 
-2. Start the application :
+2. 启动应用 :
 
     ```sh
     sudo docker-compose up -d
@@ -208,13 +203,13 @@ For a better integration of Docker to PHPStorm, use the [documentation](https://
     sudo docker-compose logs -f # Follow log output
     ```
 
-3. Open your favorite browser :
+3. 打开你喜欢的浏览器 :
 
     * [http://localhost:8000](http://localhost:8000/)
     * [https://localhost:3000](https://localhost:3000/) ([HTTPS](#configure-nginx-with-ssl-certificates) not configured by default)
     * [http://localhost:8080](http://localhost:8080/) PHPMyAdmin (username: dev, password: dev)
 
-4. Stop and clear services
+4. 暂停和清理服务
 
     ```sh
     sudo docker-compose down -v
@@ -222,11 +217,11 @@ For a better integration of Docker to PHPStorm, use the [documentation](https://
 
 ---
 
-## Use Makefile
+## 使用Makefile
 
-When developing, you can use [Makefile](https://en.wikipedia.org/wiki/Make_(software)) for doing the following operations :
+开发的时候，你可以使用 进行下列操作  [Makefile](https://en.wikipedia.org/wiki/Make_(software)) :
 
-| Name          | Description                                |
+| 名称          | 描述                                |
 |---------------|--------------------------------------------|
 | apidoc        | Generate documentation of API              |
 | clean         | Clean directories for reset                |
@@ -240,15 +235,15 @@ When developing, you can use [Makefile](https://en.wikipedia.org/wiki/Make_(soft
 | mysql-restore | Restore backup from whole database         |
 | test          | Test application with phpunit              |
 
-### Examples
+### 例子
 
-Start the application : 
+启动应用 : 
 
 ```sh
 sudo make docker-start
 ```
 
-Show help :
+显示帮助 :
 
 ```sh
 make help
@@ -256,59 +251,59 @@ make help
 
 ---
 
-## Use Docker commands
+## 使用Docker命令
 
-### Installing package with composer
+### 通过Composer 安装模块
 
 ```sh
 sudo docker run --rm -v $(pwd)/web/app:/app composer require symfony/yaml
 ```
 
-### Updating PHP dependencies with composer
+### 使用 composer 更新 PHP依赖
 
 ```sh
 sudo docker run --rm -v $(pwd)/web/app:/app composer update
 ```
 
-### Generating PHP API documentation
+### 生成PHP API 文档
 
 ```sh
 sudo docker-compose exec -T php ./app/vendor/bin/apigen generate app/src --destination ./app/doc
 ```
 
-### Testing PHP application with PHPUnit
+### 使用PHPUnit 测试 PHP 应用
 
 ```sh
 sudo docker-compose exec -T php ./app/vendor/bin/phpunit --colors=always --configuration ./app/
 ```
 
-### Checking the standard code with [PSR2](http://www.php-fig.org/psr/psr-2/)
+### 使用[PSR2](http://www.php-fig.org/psr/psr-2/)校验标准代码
 
 ```sh
 sudo docker-compose exec -T php ./app/vendor/bin/phpcs -v --standard=PSR2 ./app/src
 ```
 
-### Checking installed PHP extensions
+### 检查已安装PHP扩展
 
 ```sh
 sudo docker-compose exec php php -m
 ```
 
-### Handling database
+### 处理数据库
 
-#### MySQL shell access
+#### MySQL shell 访问
 
 ```sh
 sudo docker exec -it mysql bash
 ```
 
-and
+和
 
 ```sh
 mysql -u"$MYSQL_ROOT_USER" -p"$MYSQL_ROOT_PASSWORD"
 ```
 
-#### Backup of database
+#### 备份数据库
 
 ```sh
 mkdir -p data/db/dumps
@@ -318,19 +313,19 @@ mkdir -p data/db/dumps
 source .env && sudo docker exec $(shell docker-compose ps -q mysqldb) mysqldump --all-databases -u"$MYSQL_ROOT_USER" -p"$MYSQL_ROOT_PASSWORD" > "data/db/dumps/db.sql"
 ```
 
-or
+或
 
 ```sh
 source .env && sudo docker exec $(shell docker-compose ps -q mysqldb) mysqldump test -u"$MYSQL_ROOT_USER" -p"$MYSQL_ROOT_PASSWORD" > "data/db/dumps/test.sql"
 ```
 
-#### Restore Database
+#### 还原数据库
 
 ```sh
 source .env && sudo docker exec -i $(sudo docker-compose ps -q mysqldb) mysql -u"$MYSQL_ROOT_USER" -p"$MYSQL_ROOT_PASSWORD" < "data/db/dumps/db.sql"
 ```
 
-#### Connecting MySQL from [PDO](http://php.net/manual/en/book.pdo.php)
+#### 链接Mysql 使用 [PDO](http://php.net/manual/en/book.pdo.php)
 
 ```php
 <?php
@@ -344,9 +339,3 @@ source .env && sudo docker exec -i $(sudo docker-compose ps -q mysqldb) mysql -u
 ```
 
 ---
-
-## Help us !
-
-Any thought, feedback or (hopefully not!)
-
-Developed by [@letvinz](https://twitter.com/letvinz)
